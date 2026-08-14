@@ -1,0 +1,63 @@
+Development compatibility login stub for the dashboard frontend. It returns a synthetic bearer token and a fake user payload so the UI can exercise a login surface without the external auth-service.
+
+Parameters
+
+Try it out
+
+No parameters
+
+Request body
+
+application/json
+
+Example Value
+
+Schema
+
+{
+  "additionalProp1": {}
+}
+
+Responses
+
+Code
+
+Description
+
+Links
+
+200
+
+
+
+Login payload
+
+Media type
+
+application/json
+
+Controls Accept header.
+
+Example Value
+
+Schema
+
+{
+  "access_token": "dev.abc123",
+  "refresh_token": "refresh.abc123",
+  "token_type": "bearer",
+  "user": {
+    "id": "dev-user-1",
+    "name": "Akanksha",
+    "email": "dev@indowings.local",
+    "role": "admin"
+  }
+}
+
+No links
+
+422
+
+
+
+Validation Error  its llok like this
