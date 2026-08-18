@@ -1,545 +1,421 @@
+Today 11:13 AM
+
+Add
+Request failed with status code 502 index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+(anonymous) @ index-DcgBRhtA.js:13
+xhr @ index-DcgBRhtA.js:13
+po @ index-DcgBRhtA.js:15
+Promise.then
+_request @ index-DcgBRhtA.js:19
+request @ index-DcgBRhtA.js:15
+B.<computed> @ index-DcgBRhtA.js:19
+(anonymous) @ index-DcgBRhtA.js:11
+Ko @ index-DcgBRhtA.js:19
+(anonymous) @ index-DcgBRhtA.js:19
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:19
+WebSocket connection to 'wss://droneyaan.com/ws/ai' failed: Error during WebSocket handshake: Unexpected response code: 502
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:19
+WebSocket connection to 'wss://droneyaan.com/ws/ai' failed: Error during WebSocket handshake: Unexpected response code: 502
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:19
+WebSocket connection to 'wss://droneyaan.com/ws/ai' failed: Error during WebSocket handshake: Unexpected response code: 502
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:19
+WebSocket connection to 'wss://droneyaan.com/ws/ai' failed: Error during WebSocket handshake: Unexpected response code: 502
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+index-DcgBRhtA.js:19
+WebSocket connection to 'wss://droneyaan.com/ws/ai' failed: Error during WebSocket handshake: Unexpected response code: 502
+index-DcgBRhtA.js:13
+GET https://droneyaan.com/cameras/ 502 (Bad Gateway)
+﻿
+
+given these issus
+
+These errors are actually helpful: your frontend is reaching https://droneyaan.com, but Nginx cannot reach the FastAPI backend correctly.
+
+You have two related production routing problems:
+
+GET https://droneyaan.com/cameras/       → 502
+WSS https://droneyaan.com/ws/ai          → 502
+
+The most likely issue is your Nginx reverse-proxy configuration / FastAPI upstream, not React.
+
+1. First verify FastAPI on AWS
+
+SSH into your EC2 and run:
+
+sudo ss -lntp | grep 8000
+
+You should see something like:
+
+127.0.0.1:8000
+
+Then:
+
+curl -i http://127.0.0.1:8000/cameras/
+If you get JSON
+
+For example:
+
+[]
+
+or a camera list, then FastAPI is running and the problem is Nginx.
+
+If you get:
+Connection refused
+
+then FastAPI isn't running/listening on port 8000.
 
-Now verify your root A record
-
-Go back to Page 1 (click the 1 at the bottom).
-
-Find this record:
-
-Type: A
-Name: @
-
-Make sure it says
-
-13.201.184.30
-
-NOT
-
-13.201.184.38
-
-If it already says 13.201.184.30, then DNS is configured correctly.
-
-Next check
-
-Open Command Prompt and run:
-
-nslookup droneyaan.com
-
-Then run:
-
-nslookup www.droneyaan.com
-
-Both should eventually return:
-
-13.201.184.30
-
-If they still show the old IP, DNS propagation is still in progress. It can take anywhere from a few minutes to several hours depending on caching.
-
-Please send me:
-A screenshot of Page 1 showing the A record for @ (or confirm it is 13.201.184.30).
-The output of these two commands:  i cant find this option
-On Page 1 of your GoDaddy DNS Management, you need to look for the A record with:
-
-Type: A
-
-Name: @
-
-That’s the root record. It should point to 13.201.184.30. If it still shows 13.201.184.38, you’ll need to edit it to the correct IP.
-
-✅ Next Steps
-Confirm in GoDaddy
-
-Scroll back to Page 1 of your DNS records.
-
-Find the A record for @.
-
-Verify the “Value” (IP address) is 13.201.184.30.
-
-Run nslookup
-Open Command Prompt and run:
-
-bash
-nslookup droneyaan.com
-nslookup www.droneyaan.com
-Both should eventually resolve to 13.201.184.30.
-
-If they still show the old IP, it just means DNS propagation is ongoing. This can take a few minutes to several hours depending on caching.
-
-👉 To move forward, please either:
-
-Send me a screenshot of Page 1 showing the A record for @, or
-
-Confirm directly that it says 13.201.184.30.
-
-And also paste the output of those two nslookup commands so I can verify propagation status for you.
-
-Would you like me to walk you through exactly how to edit the A record in GoDaddy if it still shows 13.201.184.38?
-
-
-
-I see the issue clearly now. On Page 1 of your DNS records, the A record for @ is currently set to:
-
-Type: A
-
-Name: @
-
-Data: 13.201.184.38
-
-This is the old IP, not the correct one.
-
-🔧 What you need to do
-In GoDaddy DNS Management, click Edit on that A record (@).
-
-Change the Data/Value from 13.201.184.38 → 13.201.184.30.
-
-Save the record.
-
-🖥️ Verification
-After saving:
-
-Open Command Prompt and run:
-
-bash
-nslookup droneyaan.com
-nslookup www.droneyaan.com
-Both should eventually resolve to 13.201.184.30.
-
-If they still show 13.201.184.38, it just means DNS propagation is still in progress. This can take a few minutes to several hours depending on caching.
-
-👉 Please confirm once you’ve updated the A record to 13.201.184.30. Then share either:
-
-A screenshot of Page 1 showing the updated A record, or
-
-The output of the nslookup commands so I can verify propagation status for you.
-
-Would you like me to give you the exact step‑by‑step clicks in GoDaddy’s interface to edit that record?
-
-no i have now change this
-Perfect — you’ve updated the root A record from 13.201.184.38 → 13.201.184.30. That’s exactly what was needed.
-
-🔍 Next Verification
-Now let’s confirm propagation:
-
-Open Command Prompt  
-Run these two commands:
-
-bash
-nslookup droneyaan.com
-nslookup www.droneyaan.com
-Expected Output  
-Both should eventually resolve to:
-
-Code
-Name: droneyaan.com
-Address: 13.201.184.30
-and
-
-Code
-Name: www.droneyaan.com
-Address: 13.201.184.30
-If you still see 13.201.184.38  
-Don’t worry — that just means DNS propagation is still in progress. It can take anywhere from a few minutes to several hours depending on caching.
-
-👉 Please share either:
-
-A screenshot of your nslookup output, or
-
-Just paste the text results here.
-
-That way I can confirm for you that everything is resolving correctly.
-
-Would you like me to also show you how to flush your local DNS cache so you can see the new IP faster?
-
-C:\Users\user>nslookup droneyaan.com
-DNS request timed out.
-    timeout was 2 seconds.
-Server:  UnKnown
-Address:  fd00::1
-
-DNS request timed out.
-    timeout was 2 seconds.
-DNS request timed out.
-    timeout was 2 seconds.
-DNS request timed out.
-    timeout was 2 seconds.
-DNS request timed out.
-    timeout was 2 seconds.
-*** Request to UnKnown timed-out
-
-C:\Users\user>nslookup www.droneyaan.com
-DNS request timed out.
-    timeout was 2 seconds.
-Server:  UnKnown
-Address:  fd00::1
-
-DNS request timed out.
-    timeout was 2 seconds.
-DNS request timed out.
-    timeout was 2 seconds.
-DNS request timed out.
-    timeout was 2 seconds.
-DNS request timed out.
-    timeout was 2 seconds.
-*** Request to UnKnown timed-out
-
-C:\Users\user>
-Right now your nslookup is failing because Windows is trying to use your local IPv6 resolver (fd00::1), which isn’t responding. That’s why you’re seeing repeated “DNS request timed out” errors. The domain itself is fine — you already corrected the A record to 13.201.184.30 — but your PC isn’t reaching a working DNS server.
-
-🔧 Fix the Resolver
-Try forcing a public DNS server instead of the broken local one:
-
-Run these commands in Command Prompt:
-
-bash
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-(This uses Google DNS directly.)
-
-If you want to make it permanent:
-
-Go to Control Panel → Network and Internet → Network Connections.
-
-Right‑click your active adapter → Properties.
-
-Select Internet Protocol Version 4 (TCP/IPv4) → Properties.
-
-Set DNS servers to:
-
-Preferred: 8.8.8.8
-
-Alternate: 8.8.4.4
-
-Flush your DNS cache:
-
-bash
-ipconfig /flushdns
-ipconfig /renew
-✅ What You Should See
-After step 1, both commands should return:
-
-Code
-Name: droneyaan.com
-Address: 13.201.184.30
-and
-
-Code
-Name: www.droneyaan.com
-Address: 13.201.184.30
-👉 Go ahead and run the forced nslookup with 8.8.8.8. Paste the output here, and I’ll confirm that your domain is resolving correctly.
-
-Name:    droneyaan.com
-Address:  184.168.103.43
-
-
-C:\Users\user>nslookup www.droneyaan.com 8.8.8.8
-Server:  dns.google
-Address:  8.8.8.8
-
-Non-authoritative answer:
-Name:    droneyaan.com
-Address:  13.201.184.38
-Aliases:  www.droneyaan.com
-Thanks for sharing the updated nslookup results — here’s what they mean:
-
-droneyaan.com → 184.168.103.43  
-This is still pointing to GoDaddy’s default hosting IP, not the new one you set.
-
-www.droneyaan.com → 13.201.184.38 (alias of droneyaan.com)  
-This is still showing the old IP (38), not the corrected 13.201.184.30.
-
-Why this is happening
-You already changed the A record for @ to 13.201.184.30, but DNS propagation hasn’t fully completed yet.
-
-The www record is a CNAME pointing to droneyaan.com. Since droneyaan.com hasn’t fully propagated to the new IP, www is still resolving to the old value.
-
-Propagation can take anywhere from a few minutes to several hours depending on caching at DNS resolvers worldwide.
-
-✅ What to do next
-Wait for propagation  
-Within a few hours, both droneyaan.com and www.droneyaan.com should resolve to 13.201.184.30.
-
-Force refresh locally  
 Run:
 
-bash
-ipconfig /flushdns
-Then retry:
+ps aux | grep uvicorn
 
-bash
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-Double-check GoDaddy
+and:
 
-Ensure the A record for @ is 13.201.184.30.
+sudo systemctl status indoplayer
 
-Leave the www CNAME pointing to droneyaan.com (that’s correct).
+If you don't have a systemd service yet, tell me what command you're currently using to start FastAPI.
 
-👉 Right now everything is configured correctly — it’s just a matter of propagation. Once caches update, both root and www will resolve to 13.201.184.30.
+2. Check your FastAPI route
 
-Would you like me to show you how to test propagation globally (using tools like DNSChecker) so you can see which regions have already updated?
+Your camera router from earlier is:
 
-ipconfig /flushdns
-  where run this
-You’ll want to run ipconfig /flushdns inside Command Prompt on Windows. Here’s the exact process:
+@router.get("/")
+def get_cameras():
+    ...
 
-🖥️ Steps
-Press Windows Key + R → type cmd → press Enter.
-(This opens Command Prompt.)
+We need to know how it is included in app/main.py.
 
-In the black Command Prompt window, type:
+Look for something like:
 
-bash
-ipconfig /flushdns
-and press Enter.
+app.include_router(camera_router, prefix="/cameras")
 
-You should see a message like:
+If that's the case, your backend route is:
 
-Code
-Successfully flushed the DNS Resolver Cache.
-(Optional but recommended) Refresh your IP lease:
+http://127.0.0.1:8000/cameras/
 
-bash
-ipconfig /renew
-✅ After That
-Re-run:
+That's exactly what the frontend is requesting:
 
-bash
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-Both should start resolving to 13.201.184.30 once propagation has caught up.
+https://droneyaan.com/cameras/
 
-Do you want me to also show you how to check propagation globally (using a web tool like DNSChecker) so you can see which regions have already updated?
+So Nginx should proxy /cameras/ to FastAPI.
 
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-Good — now that you’ve flushed your DNS cache, the next step is to re‑run the commands with Google’s DNS resolver explicitly:
+3. Fix Nginx API routing
 
-bash
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-What you should expect
-droneyaan.com → should eventually resolve to 13.201.184.30 (the corrected A record).
+Your Nginx server should have a configuration similar to this:
 
-www.droneyaan.com → since it’s a CNAME pointing to droneyaan.com, it will also resolve to 13.201.184.30 once propagation finishes.
+server {
+    listen 80;
+    server_name droneyaan.com www.droneyaan.com;
 
-Right now you’re still seeing:
 
-droneyaan.com → 184.168.103.43 (GoDaddy default hosting IP)
+    root /var/www/html;
+    index index.html;
 
-www.droneyaan.com → 13.201.184.38 (old IP)
 
-That means propagation hasn’t fully completed yet. This is normal — DNS changes can take a few minutes to several hours depending on caching at different resolvers worldwide.
+    # React
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
 
-✅ Next checks
-Keep retrying the nslookup with 8.8.8.8 every 30–60 minutes.
 
-Use a global DNS checker (like dnschecker.org) to see if some regions already show 13.201.184.30.
+    # FastAPI REST API
+    location /cameras/ {
+        proxy_pass http://127.0.0.1:8000/cameras/;
 
-Once both root (@) and www resolve to 13.201.184.30, your DNS is fully propagated and correct.
 
-Would you like me to walk you through checking propagation globally right now so you can see which regions have already updated?
+        proxy_http_version 1.1;
 
-Windows IP Configuration
 
-Successfully flushed the DNS Resolver Cache.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
 
-C:\Users\user>ipconfig /renew
 
-Windows IP Configuration
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
 
-No operation can be performed on Ethernet while it has its media disconnected.
-No operation can be performed on Local Area Connection* 9 while it has its media disconnected.
-No operation can be performed on Local Area Connection* 10 while it has its media disconnected.
-No operation can be performed on Bluetooth Network Connection while it has its media disconnected.
 
-Ethernet adapter Ethernet:
+    # AI WebSocket
+    location /ws/ai {
+        proxy_pass http://127.0.0.1:8000/ws/ai;
 
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
 
-Wireless LAN adapter Local Area Connection* 9:
+        proxy_http_version 1.1;
 
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
 
-Wireless LAN adapter Local Area Connection* 10:
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
 
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
 
-Wireless LAN adapter Wi-Fi:
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
 
-   Connection-specific DNS Suffix  . : indowings.com
-   Link-local IPv6 Address . . . . . : fe80::6528:a4bf:4e97:bc9%4
-   IPv4 Address. . . . . . . . . . . : 192.168.1.227
-   Subnet Mask . . . . . . . . . . . : 255.255.255.0
-   Default Gateway . . . . . . . . . : fe80::f2ad:4eff:fe3d:439%4
-                                       192.168.1.1
 
-Ethernet adapter Bluetooth Network Connection:
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
 
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
 
-C:\Users\user>nslookup droneyaan.com 8.8.8.8
-Server:  dns.google
-Address:  8.8.8.8
+    # Publisher WebSocket
+    location /api/publisher/ws/ {
+        proxy_pass http://127.0.0.1:8000/api/publisher/ws/;
 
-Non-authoritative answer:
-Name:    droneyaan.com
-Address:  13.201.184.38
 
+        proxy_http_version 1.1;
 
-C:\Users\user>nslookup www.droneyaan.com 8.8.8.8
-Server:  dns.google
-Address:  8.8.8.8
 
-Non-authoritative answer:
-Name:    droneyaan.com
-Address:  13.201.184.38
-Aliases:  www.droneyaan.com
-Great — thanks for running those checks. Here’s what’s happening:
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
 
-Both droneyaan.com and www.droneyaan.com are still resolving to the old IPs (184.168.103.43 and 13.201.184.38) instead of the corrected 13.201.184.30.
 
-This is normal: DNS propagation is still in progress. Even though you updated the A record in GoDaddy, it can take anywhere from a few minutes to several hours (sometimes up to 24–48 hours depending on caching) for all DNS resolvers worldwide to pick up the change.
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
 
-✅ What you should do now
-Wait for propagation  
-Keep checking every 30–60 minutes with:
 
-bash
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-Eventually both will show:
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+}
 
-Code
-Address: 13.201.184.30
-Check globally  
-Use a tool like dnschecker.org → enter droneyaan.com and select A record.
-This will show you which regions have already updated to 13.201.184.30.
+But don't blindly replace your current Nginx file yet. Your exact FastAPI prefixes need to match your actual main.py.
 
-Confirm GoDaddy settings
+4. There may be more API routes
 
-A record for @ → 13.201.184.30 (correct).
+Your frontend probably calls more than:
 
-CNAME for www → points to droneyaan.com (correct).
+/cameras/
 
-👉 Bottom line: your configuration is correct. It’s just a matter of waiting for propagation to finish.
+You have things such as:
 
-Would you like me to walk you through using DNSChecker right now so you can visually confirm which parts of the world already see the new IP?
+/alerts
+/alerts/unread
+/recordings
+/analytics
+/auth
+/ws/ai
+/api/publisher/ws/...
 
-Non-authoritative answer:
-Name:    droneyaan.com
-Address:  184.168.103.43
+If your existing Nginx has a general API proxy, it may be much cleaner to use:
 
+location / {
+    try_files $uri $uri/ /index.html;
+}
 
-C:\Users\user>nslookup www.droneyaan.com 8.8.8.8
-Server:  dns.google
-Address:  8.8.8.8
 
-Non-authoritative answer:
-Name:    droneyaan.com
-Address:  13.201.184.38
-Aliases:  www.droneyaan.com
+location /api/ {
+    proxy_pass http://127.0.0.1:8000;
 
-  now given this how to fix it
-Right now your DNS is still resolving to the old IPs because propagation hasn’t finished. Let’s break down exactly how to fix and confirm it:
 
-🔧 Step 1: Verify GoDaddy Records
-In your GoDaddy DNS Management:
+    proxy_http_version 1.1;
 
-A record for @ → must be 13.201.184.30 (you already corrected this).
 
-CNAME for www → should point to droneyaan.com (this is correct, leave it as is).
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
 
-So your configuration is fine — no further edits needed.
+However, your current frontend is requesting /cameras/, not /api/cameras/.
 
-🔍 Step 2: Understand Why You Still See Old IPs
-droneyaan.com → 184.168.103.43
+Therefore, either:
 
-www.droneyaan.com → 13.201.184.38
+Option A — Keep your current frontend URLs
 
-These are cached results from DNS resolvers that haven’t updated yet. Propagation is global and can take minutes to several hours (sometimes up to 24–48 hours).
+Proxy:
 
-✅ Step 3: Confirm Propagation
-Keep running:
+/cameras/
 
-bash
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-every 30–60 minutes.
-Eventually both will return:
+directly to:
 
-Code
-Address: 13.201.184.30
-Use dnschecker.org → enter droneyaan.com and select A record.
-This shows which regions worldwide already see the new IP.
+127.0.0.1:8000/cameras/
+Option B — Move production API URLs to /api/...
 
-🚀 Step 4: Speed Things Up Locally
-You already flushed DNS (ipconfig /flushdns).
+Frontend:
 
-If you want faster updates:
+https://droneyaan.com/api/cameras/
 
-Change your DNS servers to Google (8.8.8.8, 8.8.4.4) or Cloudflare (1.1.1.1).
+Nginx:
 
-This bypasses slower ISP caches.
+/api/ → FastAPI
 
-👉 Bottom line: Your DNS setup is correct. Nothing else needs fixing in GoDaddy. It’s just propagation delay. Once caches update, both root and www will resolve to 13.201.184.30.
+This is generally cleaner, but it requires checking your existing frontend/backend routes before changing it.
 
-Would you like me to walk you through checking DNSChecker right now so you can see which regions already show the new IP?
+For your production project, I recommend Option A for now because you want to avoid breaking the already-working application.
 
-C:\Users\user>nslookup droneyaan.com 8.8.8.8
-Server:  dns.google
-Address:  8.8.8.8
+5. Test Nginx configuration
 
-Non-authoritative answer:
-Name:    droneyaan.com
-Address:  184.168.103.43
+After modifying Nginx:
 
+sudo nginx -t
 
-C:\Users\user>nslookup www.droneyaan.com 8.8.8.8
-Server:  dns.google
-Address:  8.8.8.8
+You must get:
 
-Non-authoritative answer:
-Name:    droneyaan.com
-Address:  13.201.184.30
-Aliases:  www.droneyaan.com
+syntax is ok
+test is successful
 
+Then:
 
-C:\Users\user>
-C:\Users\user>
-Excellent — now we’re seeing progress:
+sudo systemctl reload nginx
+6. Test through the domain
 
-droneyaan.com → 184.168.103.43 (still the old GoDaddy hosting IP)
+On the EC2:
 
-www.droneyaan.com → 13.201.184.30 (this is correct — the new IP is showing for the www alias)
+curl -i https://droneyaan.com/cameras/
 
-🔍 What this means
-Your A record for @ is set correctly to 13.201.184.30 in GoDaddy.
+You want:
 
-The CNAME for www points to droneyaan.com, and Google DNS is already resolving it to 13.201.184.30.
+HTTP/2 200
 
-The only part lagging is the root domain (droneyaan.com), which is still cached at 184.168.103.43. This is purely a propagation delay.
+with your camera JSON.
 
-✅ Next Steps
-Wait for propagation  
-Within a few hours, droneyaan.com will also resolve to 13.201.184.30. Right now, www is already correct, so your site should work fine when accessed via www.droneyaan.com.
+If you still get:
 
-Check globally  
-Go to dnschecker.org, enter droneyaan.com, select A record, and you’ll see which regions already show 13.201.184.30.
+502 Bad Gateway
 
-Optional local speed-up
+immediately run:
 
-Use Google DNS (8.8.8.8, 8.8.4.4) or Cloudflare (1.1.1.1) in your network settings to bypass slower ISP caches.
+sudo tail -50 /var/log/nginx/error.log
 
-Keep running:
+That log will tell us exactly why Nginx is returning 502.
 
-bash
-nslookup droneyaan.com 8.8.8.8
-nslookup www.droneyaan.com 8.8.8.8
-until both return 13.201.184.30.
+7. Fix /ws/ai
 
-👉 Bottom line: Your configuration is correct. www is already resolving properly, and the root domain will follow once propagation finishes.
+Your error:
 
-Do you want me to walk you through checking DNSChecker right now so you can visually confirm which regions already see the new IP?
+WebSocket connection to
+'wss://droneyaan.com/ws/ai'
+failed
+
+
+Unexpected response code: 502
+
+requires WebSocket proxying.
+
+Nginx must have:
+
+location /ws/ai {
+    proxy_pass http://127.0.0.1:8000/ws/ai;
+
+
+    proxy_http_version 1.1;
+
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
+
+    proxy_set_header Host $host;
+
+
+    proxy_read_timeout 3600s;
+}
+
+The important parts are:
+
+proxy_http_version 1.1;
+
+
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+
+Without those, WebSocket connections commonly fail.
+
+8. Verify the AI WebSocket exists
+
+On the server, search your backend:
+
+grep -R "ws/ai" -n backend_dashboard-main/app
+
+Also:
+
+grep -R "@.*websocket" -n backend_dashboard-main/app
+
+You should find the actual FastAPI WebSocket route.
+
+For example:
+
+@router.websocket("/ws/ai")
+async def ai_websocket(websocket: WebSocket):
+    ...
+
+Then confirm how that router is included in main.py.
+
+9. Your current architecture should be
+
+After fixing this, the production flow should be:
+
+                    Internet
+                       │
+                       ▼
+              https://droneyaan.com
+                       │
+                       ▼
+                    Nginx
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+   React SPA       FastAPI REST    WebSockets
+                    :8000
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+   CameraManager   AI Worker      Publisher
+        │              │              │
+        ▼              ▼              ▼
+    MediaMTX       YOLO11m       Streaming
+        │
+        ▼
+   RTSP Cameras
+
+Your current error is happening around this section:
+
+droneyaan.com
+      │
+      ▼
+   Nginx
+      │
+      X  ← 502
+      │
+127.0.0.1:8000
+10. Don't change the RTSP URL
+
+This:
+
+rtsp://13.201.184.38:8554/str
+
+is not the cause of these 502 errors.
+
+The errors are occurring before the camera API/WebSocket successfully reaches FastAPI.
+
+Do these 4 commands now
+
+On your EC2, run these one by one:
+
+sudo ss -lntp | grep 8000
+curl -i http://127.0.0.1:8000/cameras/
+sudo nginx -t
+sudo tail -50 /var/log/nginx/error.log
+
+Paste the complete output of those four commands here. Also paste your current /etc/nginx/sites-enabled/... configuration and the relevant app/main.py include_router(...) lines. Then I can give you the exact Nginx configuration for droneyaan.com, including /cameras/, /ws/ai, and your publisher WebSocket, without breaking your existing deployment.
